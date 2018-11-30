@@ -2,10 +2,13 @@ package pl.krzychu;
 
 import java.sql.*;
 
+
+// http://edu.pjwstk.edu.pl/wyklady/mpr/scb/W7/W7.htm /// cos o bazach danych
+
 public class MySQLAccess {
     private Connection conn = null;
     private Statement st = null;
-
+    private DatabaseMetaData md;// Uzyskiwanie metainformacji o bazie danych
     private ResultSet rs = null;
 
 
@@ -14,12 +17,27 @@ public class MySQLAccess {
 
     public void Connection() throws Exception {
 
+//      Sterowniki spełniające specyfikację JDBC 4.0 (jeśli odpowiednie JARy spełniają protokól Service Provider) mogą być odnajdywane bez jawnego załadowania klasy.
+//                Np. jeśli nasza aplikacja ma dostęp do pliku derby.jar (jest na ścieżce dostępu klas), to uzyskać połaczenie możemy  prościej:
+//
+//            Connection con = DriverManager.getConnection("jdbc:derby:ksidb");
+
+//        String driverName = "org.apache.derby.jdbc.ClientDriver";
+//        String url = "jdbc:derby://localhost/ksidb";
+//
+//
+//        Class.forName(driverName).newInstance();
+//        Connection con = DriverManager.getConnection(url);
+
+
         try
         {
 
             Class.forName(myDriver);
-            conn = DriverManager.getConnection(myUrl, "root", "");
 
+            conn = DriverManager.getConnection(myUrl, "root", "");
+            md = conn.getMetaData(); // Uzyskiwanie metainformacji o bazie danych
+            System.out.println(md.getUserName());// Uzyskiwanie metainformacji o bazie danych
         }
         catch (Exception e)
         {
@@ -34,6 +52,7 @@ public class MySQLAccess {
         String query = "INSERT INTO `Ksiazki`(`Nazwa`, `Autor`, `Rok`) VALUES ('"+name+"','"+author+"','"+anno+"')";
 
         try {
+
             // create the java statement
             st = conn.createStatement();
 
@@ -128,6 +147,13 @@ public class MySQLAccess {
             ex.getMessage();
         }
     }
+
+    public void Transakcje() {
+
+
+
+    }
+
 
 
 }

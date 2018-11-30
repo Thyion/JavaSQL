@@ -14,8 +14,12 @@ public class Main {
 
         book1 = dao.getBook( 1);
 
+
         dao.closeConnection();
         System.out.println(book1);
+
+
+
 
     }
 
