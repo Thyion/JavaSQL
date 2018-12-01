@@ -1,6 +1,7 @@
 package pl.krzychu;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 
 // http://edu.pjwstk.edu.pl/wyklady/mpr/scb/W7/W7.htm /// cos o bazach danych
@@ -36,8 +37,8 @@ public class MySQLAccess {
             Class.forName(myDriver);
 
             conn = DriverManager.getConnection(myUrl, "root", "");
-            md = conn.getMetaData(); // Uzyskiwanie metainformacji o bazie danych
-            System.out.println(md.getUserName());// Uzyskiwanie metainformacji o bazie danych
+            //md = conn.getMetaData(); // Uzyskiwanie metainformacji o bazie danych
+            //System.out.println(md.getUserName());// Uzyskiwanie metainformacji o bazie danych
         }
         catch (Exception e)
         {
@@ -49,7 +50,7 @@ public class MySQLAccess {
 
     public void insertBook(String name, String author, int anno) {
 
-        String query = "INSERT INTO `Ksiazki`(`Nazwa`, `Autor`, `Rok`) VALUES ('"+name+"','"+author+"','"+anno+"')";
+        String query = "INSERT INTO `Ksiazki`(`Tytuł`, `Autor`, `Rok`) VALUES ('"+name+"','"+author+"','"+anno+"')";
 
         try {
 
@@ -76,7 +77,7 @@ public class MySQLAccess {
 
     }
 
-    public void getBooks() {
+    public void printBooks() {
         // our SQL SELECT query.
         // if you only need a few columns, specify them by name instead of using "*"
         String query = "SELECT * FROM Ksiazki";
@@ -90,7 +91,7 @@ public class MySQLAccess {
             // iterate through the java resultset
             while (rs.next()) {
                 int id = rs.getInt("Id");
-                String name = rs.getString("Nazwa");
+                String name = rs.getString("Tytuł");
                 String author = rs.getString("Autor");
                 Integer anno = rs.getInt("Rok");
 
@@ -104,39 +105,71 @@ public class MySQLAccess {
 
     }
 
+    public ArrayList<Ksiazka> getBooksToArray() {
 
-    public Ksiazka getBook(int id){
-        String query = "SELECT Nazwa, Autor, Rok FROM Ksiazki WHERE Id="+id;
-        Ksiazka book = new Ksiazka();
+        ArrayList<Ksiazka> booksList = new ArrayList<>();
+        // our SQL SELECT query.
+        // if you only need a few columns, specify them by name instead of using "*"
+        String query = "SELECT * FROM Ksiazki";
+        try {
+            // create the java statement
+            st = conn.createStatement();
+            // execute the query, and get a java resultset
+            rs = st.executeQuery(query);
 
+            while (rs.next()) {
+                Ksiazka book = new Ksiazka();
+
+                String name = rs.getString("Tytuł");
+                String author = rs.getString("Autor");
+                Integer anno = rs.getInt("Rok");
+                book.title = name;
+                book.author = author;
+                book.anno = anno;
+                booksList.add(book);
+            }
+
+            rs.close();
+            st.close();
+
+        } catch (SQLException ex){
+            ex.getMessage();
+        }
+        return booksList;
+    }
+
+
+    public ArrayList<Ksiazka> getBook(int id){
+        ArrayList<Ksiazka> book2 = new ArrayList<>();
+        String query = "SELECT * FROM Ksiazki";   //"SELECT Tytuł, Autor, Rok FROM Ksiazki WHERE Id="+id;
 
         try {
             // create the java statement
             st = conn.createStatement();
-
             // execute the query, and get a java resultset
             rs = st.executeQuery(query);
-                String name, author;
-                int anno;
-                name = (rs.getString("Nazwa"));
-                author = (rs.getString("Autor"));
-                anno = (rs.getInt("Rok"));
-                book.setAuthor(author);
-                book.setTitle(name);
-                book.setAnno(anno);
+
+            rs.next();
+
+                Ksiazka book = new Ksiazka();
+                String name = (rs.getString("Tytuł"));
+                String author = (rs.getString("Autor"));
+                int anno = (rs.getInt("Rok"));
+                book.author = author;
+                book.title = name;
+                book.anno = anno;
+                book2.add(book);
+
+            rs.close();
+            st.close();
         } catch (SQLException ex){
             ex.getMessage();
         }
-        return book;
+        return book2;
     }
 
-
-
-
-
-
     public void changeAuthor(String name, String author){
-        String query = "UPDATE `Ksiazki` SET Autor='"+author+"' WHERE Nazwa='"+name+"'";
+        String query = "UPDATE `Ksiazki` SET Autor='"+author+"' WHERE Tytuł='"+name+"'";
         try {
             // create the java statement
             st = conn.createStatement();
@@ -148,7 +181,29 @@ public class MySQLAccess {
         }
     }
 
-    public void Transakcje() {
+    public void Transakcje() throws SQLException {
+        String query = "UPDATE Ksiazki SET Tytuł='Krzychu' WHERE Id=3";
+        String query2 = "SELECT Tytuł FROM Ksiazki WHERE Id=28";
+        try{
+            System.out.println("trololo1");
+            //conn.setAutoCommit(false);
+            System.out.println("trololo2");
+            st = conn.createStatement();
+            // execute the query, and get a java resultset
+            rs = st.executeQuery(query);
+
+            rs = st.executeQuery(query2);
+
+            System.out.println("trololo3");
+
+            //conn.commit();
+
+
+        }catch (SQLException ex){
+            //conn.rollback();
+        }
+
+
 
 
 

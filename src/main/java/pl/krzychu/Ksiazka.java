@@ -1,9 +1,9 @@
 package pl.krzychu;
 
 public class Ksiazka {
-    private String title;
-    private String author;
-    private int anno;
+    public String title;
+    public String author;
+    public int anno;
 
     public Ksiazka() {
     }
@@ -16,7 +16,11 @@ public class Ksiazka {
 
     @Override
     public String toString() {
-        return "Ksiazka:\n\tTytuł:"+title;
+        return "Ksiazka{" +
+                "title='" + title + '\'' +
+                ", author='" + author + '\'' +
+                ", anno=" + anno +
+                '}';
     }
 
     public String getTitle() {
